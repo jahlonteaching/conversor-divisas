@@ -1,21 +1,9 @@
 from nicegui import ui
 
-# Simulación de una clase que implementa IConversor (reemplaza con la tuya real)
-class ConversorMock:
-    def convertir_divisa(self, origen: str, destino: str, monto: float) -> float:
-        tasas = {"USD": 1, "EUR": 0.9, "COP": 4000}
-        return monto * tasas[destino] / tasas[origen]
+from app.model import Conversor
+from app.util import obtener_divisas
 
-    def listar_tasas_de_cambio(self, origen: str) -> list[tuple[str, float]]:
-        tasas = {
-            "USD": [("EUR", 0.9), ("COP", 4000)],
-            "EUR": [("USD", 1.1), ("COP", 4400)],
-            "COP": [("USD", 0.00025), ("EUR", 0.00023)],
-        }
-        return tasas.get(origen, [])
-
-# Instancia del conversor (mock)
-conversor = ConversorMock()
+conversor = Conversor()
 
 ui.markdown('# 💱 Conversor de Divisas').classes('text-center text-3xl font-bold mb-8')
 
@@ -24,8 +12,8 @@ with ui.row().classes('justify-center'):
     with ui.card().classes('w-1/2 shadow-xl p-6 rounded-2xl bg-white'):
         ui.markdown('## Convertir Divisa')
 
-        origen = ui.select(['USD', 'EUR', 'COP'], label='Divisa Origen')
-        destino = ui.select(['USD', 'EUR', 'COP'], label='Divisa Destino')
+        origen = ui.select(obtener_divisas(), label='Divisa Origen')
+        destino = ui.select(obtener_divisas(), label='Divisa Destino')
         monto = ui.input(label='Monto a Convertir', placeholder='Ej. 100', validation={'Ingrese un número': lambda v: v.replace('.', '', 1).isdigit()})
         resultado = ui.label()
 
@@ -40,7 +28,7 @@ with ui.row().classes('justify-center'):
     with ui.card().classes('w-1/2 shadow-xl p-6 rounded-2xl bg-white'):
         ui.markdown('## Tasas de Cambio')
 
-        origen_tasa = ui.select(['USD', 'EUR', 'COP'], label='Divisa Origen')
+        origen_tasa = ui.select(obtener_divisas(), label='Divisa Origen')
         resultado_tasas = ui.markdown('')
 
         def listar_tasas():
